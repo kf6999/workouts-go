@@ -22,12 +22,6 @@ type Workout struct {
 	Day_id         int32     `json:"day_id"`
 }
 
-type Mesocycle struct {
-	ID           int64     `json:"id"`
-	Created_at   time.Time `json:"-"`
-	MesocycleNum int32     `json:"mesocycleNum"`
-}
-
 type Week struct {
 	ID         int64     `json:"id"`
 	Created_at time.Time `json:"-"`
