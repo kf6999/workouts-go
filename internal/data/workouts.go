@@ -22,12 +22,6 @@ type Workout struct {
 	Day_id         int32     `json:"day_id"`
 }
 
-type Week struct {
-	ID         int64     `json:"id"`
-	Created_at time.Time `json:"-"`
-	WeekNum    int32     `json:"weekNum"`
-}
-
 type Day struct {
 	ID         int64     `json:"id"`
 	Created_at time.Time `json:"-"`

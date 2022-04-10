@@ -8,9 +8,10 @@ import (
 	"workout.kenfan.org/internal/validator"
 )
 
-func (app *application) createMesocycleHandler(w http.ResponseWriter, r *http.Request) {
+func (app *application) createWeekHandler(w http.ResponseWriter, r *http.Request) {
 	var input struct {
-		MesocycleNum int32 `json:"mesocycleNum"`
+		WeekNum      int32 `json:"weekNum"`
+		Mesocycle_id int64 `json:"mesocycle_id"`
 	}
 
 	err := app.readJSON(w, r, &input)
@@ -19,41 +20,42 @@ func (app *application) createMesocycleHandler(w http.ResponseWriter, r *http.Re
 		return
 	}
 
-	mesocycle := &data.Mesocycle{
-		MesocycleNum: input.MesocycleNum,
+	week := &data.Week{
+		WeekNum:      input.WeekNum,
+		Mesocycle_id: input.Mesocycle_id,
 	}
+
 	v := validator.New()
 
-	if data.ValidateMesocycle(v, mesocycle); !v.Valid() {
+	if data.ValidateWeek(v, week); !v.Valid() {
 		app.failedValidationResponse(w, r, v.Errors)
 		return
 	}
 
-	err = app.models.Workouts.InsertMesocycle(mesocycle)
+	err = app.models.Workouts.InsertWeek(week)
 	if err != nil {
-		app.serverErrorResponse(w, r, err)
+		app.errorResponse(w, r, http.StatusInternalServerError, err.Error())
 		return
 	}
 
 	headers := make(http.Header)
-	headers.Set("Location", fmt.Sprintf("/mesocycles/%d", mesocycle.ID))
+	headers.Set("Location", fmt.Sprintf("/week/%d", week.ID))
 
-	// Write JSON response with 201 status code, workout data in response and location header
-	err = app.writeJSON(w, http.StatusAccepted, envelope{"mesocycle": mesocycle}, headers)
+	err = app.writeJSON(w, http.StatusAccepted, envelope{"week": week}, headers)
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 		return
 	}
 }
 
-func (app *application) showMesocycleHandler(w http.ResponseWriter, r *http.Request) {
+func (app *application) showWeekHandler(w http.ResponseWriter, r *http.Request) {
 	id, err := app.readIDParam(r)
 	if err != nil {
 		app.notFoundResponse(w, r)
 		return
 	}
 
-	mesocycle, err := app.models.Workouts.GetMesocycle(id)
+	week, err := app.models.Workouts.GetWeek(id)
 	if err != nil {
 		if errors.Is(err, data.ErrRecordNotFound) {
 			app.notFoundResponse(w, r)
@@ -62,20 +64,20 @@ func (app *application) showMesocycleHandler(w http.ResponseWriter, r *http.Requ
 		app.serverErrorResponse(w, r, err)
 		return
 	}
-	err = app.writeJSON(w, http.StatusOK, envelope{"mesocycle": mesocycle}, nil)
+	err = app.writeJSON(w, http.StatusOK, envelope{"week": week}, nil)
 	if err != nil {
 		app.badRequestResponse(w, r, err)
 	}
 }
 
-func (app *application) updateMesocycleHandler(w http.ResponseWriter, r *http.Request) {
+func (app *application) updateWeekHandler(w http.ResponseWriter, r *http.Request) {
 	id, err := app.readIDParam(r)
 	if err != nil {
 		app.notFoundResponse(w, r)
 		return
 	}
 
-	mesocycle, err := app.models.Workouts.GetMesocycle(id)
+	week, err := app.models.Workouts.GetWeek(id)
 	if err != nil {
 		switch {
 		case errors.Is(err, data.ErrRecordNotFound):
@@ -87,7 +89,7 @@ func (app *application) updateMesocycleHandler(w http.ResponseWriter, r *http.Re
 	}
 
 	var input struct {
-		MesocycleNum int32 `json:"mesocycleNum"`
+		WeekNum int32 `json:"weekNum"`
 	}
 
 	err = app.readJSON(w, r, &input)
@@ -96,34 +98,35 @@ func (app *application) updateMesocycleHandler(w http.ResponseWriter, r *http.Re
 		return
 	}
 
-	mesocycle.MesocycleNum = input.MesocycleNum
+	week.WeekNum = input.WeekNum
 
 	v := validator.New()
-	if data.ValidateMesocycle(v, mesocycle); !v.Valid() {
+
+	if data.ValidateWeek(v, week); !v.Valid() {
 		app.failedValidationResponse(w, r, v.Errors)
 		return
 	}
 
-	err = app.models.Workouts.UpdateMesocycle(mesocycle)
+	err = app.models.Workouts.UpdateWeek(week)
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 		return
 	}
 
-	err = app.writeJSON(w, http.StatusOK, envelope{"mesocycle": mesocycle}, nil)
+	err = app.writeJSON(w, http.StatusOK, envelope{"week": week}, nil)
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 	}
 }
 
-func (app *application) deleteMesocycleHandler(w http.ResponseWriter, r *http.Request) {
+func (app *application) deleteWeekHandler(w http.ResponseWriter, r *http.Request) {
 	id, err := app.readIDParam(r)
 	if err != nil {
 		app.notFoundResponse(w, r)
 		return
 	}
 
-	err = app.models.Workouts.DeleteMesocycle(id)
+	err = app.models.Workouts.DeleteWeek(id)
 	if err != nil {
 		switch {
 		case errors.Is(err, data.ErrRecordNotFound):
@@ -134,7 +137,7 @@ func (app *application) deleteMesocycleHandler(w http.ResponseWriter, r *http.Re
 		return
 	}
 
-	err = app.writeJSON(w, http.StatusOK, envelope{"message": "mesocycle successfully deleted"}, nil)
+	err = app.writeJSON(w, http.StatusOK, envelope{"message": "week successfully deleted"}, nil)
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 	}
