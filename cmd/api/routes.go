@@ -31,5 +31,11 @@ func (app *application) routes() *httprouter.Router {
 	router.HandlerFunc(http.MethodPatch, "/v1/week/:id", app.updateWeekHandler)
 	router.HandlerFunc(http.MethodDelete, "/v1/week/:id", app.deleteWeekHandler)
 
+	// Day Routes
+	router.HandlerFunc(http.MethodPost, "/v1/day", app.createDayHandler)
+	router.HandlerFunc(http.MethodGet, "/v1/day/:id", app.showDayHandler)
+	router.HandlerFunc(http.MethodPatch, "/v1/day/:id", app.updateDayHandler)
+	router.HandlerFunc(http.MethodDelete, "/v1/day/:id", app.deleteDayHandler)
+
 	return router
 }

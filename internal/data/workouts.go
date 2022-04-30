@@ -22,12 +22,6 @@ type Workout struct {
 	Day_id         int32     `json:"day_id"`
 }
 
-type Day struct {
-	ID         int64     `json:"id"`
-	Created_at time.Time `json:"-"`
-	DayNum     int32     `json:"dayNum"`
-}
-
 type Exercise struct {
 	ExeciseName   string    `json:"exerciseName"`
 	Created_at    time.Time `json:"-"`
@@ -90,10 +84,10 @@ func (w WorkoutModel) Get(id int64) (*Workout, error) {
 }
 
 func (w WorkoutModel) Update(workout *Workout) error {
-	query := `UPDATE workout SET weight = $1, repResults = $2, sorenessRating = $3, pumpRating = $4 WHERE id = $5 returning day_id`
+	query := `UPDATE workout SET exerciseName = $1, weight = $2, repResults = $3, sorenessRating = $4, pumpRating = $5 WHERE id = $6 returning day_id`
 
 	// Create args slice containing values for placeholder parameters from workout struct
-	args := []interface{}{workout.Weight, pq.Array(workout.RepResults), workout.SorenessRating, workout.PumpRating, workout.ID}
+	args := []interface{}{workout.ExerciseName, workout.Weight, pq.Array(workout.RepResults), workout.SorenessRating, workout.PumpRating, workout.ID}
 
 	// Use QueryRow() to execute query by passing in the args slice as variadic values and scanning hte new version value into workout struct
 	return w.DB.QueryRow(query, args...).Scan(&workout.Day_id)

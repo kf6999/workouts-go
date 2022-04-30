@@ -113,10 +113,11 @@ func (app *application) updateWorkoutsHandler(w http.ResponseWriter, r *http.Req
 
 	// Declare input struct to hold expected values in HTTP request
 	var input struct {
-		Weight         int32   `json:"weight"`
+		ExerciseName   *string `json:"exerciseName"`
+		Weight         *int32  `json:"weight"`
 		RepResults     []int32 `json:"repResults"`
-		SorenessRating int32   `json:"sorenessRating"`
-		PumpRating     int32   `json:"pumpRating"`
+		SorenessRating *int32  `json:"sorenessRating"`
+		PumpRating     *int32  `json:"pumpRating"`
 	}
 
 	// json.Decoder instance to read from request body and decode into input struct
@@ -127,10 +128,21 @@ func (app *application) updateWorkoutsHandler(w http.ResponseWriter, r *http.Req
 	}
 
 	// Copy values from input struct to workout struct
-	workout.Weight = input.Weight
-	workout.RepResults = input.RepResults
-	workout.SorenessRating = input.SorenessRating
-	workout.PumpRating = input.PumpRating
+	if input.ExerciseName != nil {
+		workout.ExerciseName = *input.ExerciseName
+	}
+	if input.Weight != nil {
+		workout.Weight = *input.Weight
+	}
+	if input.RepResults != nil {
+		workout.RepResults = input.RepResults
+	}
+	if input.SorenessRating != nil {
+		workout.SorenessRating = *input.SorenessRating
+	}
+	if input.PumpRating != nil {
+		workout.PumpRating = *input.PumpRating
+	}
 
 	// New validator instance
 	v := validator.New()
