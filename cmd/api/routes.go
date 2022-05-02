@@ -37,5 +37,7 @@ func (app *application) routes() *httprouter.Router {
 	router.HandlerFunc(http.MethodPatch, "/v1/day/:id", app.updateDayHandler)
 	router.HandlerFunc(http.MethodDelete, "/v1/day/:id", app.deleteDayHandler)
 
+	// Setup Routes
+	router.HandlerFunc(http.MethodPost, "/v1/setup", app.createSetupHandler)
 	return router
 }

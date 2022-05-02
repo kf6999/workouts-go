@@ -9,7 +9,7 @@ import (
 )
 
 func (app *application) createWorkoutsHandler(w http.ResponseWriter, r *http.Request) {
-	// anonymous struct to hold information in HTTP request ot be target decode destination
+	// anonymous struct to hold information in HTTP request to be targeted decode destination
 
 	var input struct {
 		ExerciseName   string  `json:"exerciseName"`
